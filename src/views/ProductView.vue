@@ -2,7 +2,7 @@
 	<div class="product">
     <HeaderShayna/>
      <!-- Breadcrumb Section Begin -->
-    <div class="breacrumb-section">
+    <div class="breacrumb-section text-left">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -24,30 +24,20 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="product-pic-zoom">
-                                <img class="product-big-img" src="img/mickey1.jpg" alt="" />
+                                <img class="product-big-img" :src="gambar_default" alt="" />
                             </div>
                             <div class="product-thumbs">
-                                <div class="product-thumbs-track ps-slider owl-carousel">
-                                    <div class="pt active" data-imgbigurl="img/mickey1.jpg">
-                                        <img src="img/mickey1.jpg" alt="" />
+                                <carousel :dots="false" :nav="false"  class="product-thumbs-track ps-slider">
+                                    <div v-for="product in thumbs" :key="product">
+                                        <div :class="product == gambar_default ? 'pt active' : 'pt' " :data-imgbigurl="product" >
+                                            <img :src="product" alt="" @click="changeImage(product)" />
+                                        </div>
                                     </div>
-
-                                    <div class="pt" data-imgbigurl="img/mickey2.jpg">
-                                        <img src="img/mickey2.jpg" alt="" />
-                                    </div>
-
-                                    <div class="pt" data-imgbigurl="img/mickey3.jpg">
-                                        <img src="img/mickey3.jpg" alt="" />
-                                    </div>
-
-                                    <div class="pt" data-imgbigurl="img/mickey4.jpg">
-                                        <img src="img/mickey4.jpg" alt="" />
-                                    </div>
-                                </div>
+                                </carousel>
                             </div>
                         </div>
                         <div class="col-lg-6">
-                            <div class="product-details">
+                            <div class="product-details text-left">
                                 <div class="pd-title">
                                     <span>oranges</span>
                                     <h3>Pure Pineapple</h3>
@@ -92,5 +82,27 @@ export default {
 	FooterShayna,
     carousel
 	},
+    data() {
+        return {
+            gambar_default: "img/mickey1.jpg",
+            thumbs: [
+                "img/mickey1.jpg",
+                "img/mickey2.jpg",
+                "img/mickey3.jpg",
+                "img/mickey4.jpg",
+            ]
+        }
+    },
+    methods: {
+        changeImage(img) {
+            this.gambar_default = img;
+        }
+    }
 };
 </script>
+
+<style scoped>
+.product-thumbs .pt{
+    margin-right: 14px;
+}
+</style>
