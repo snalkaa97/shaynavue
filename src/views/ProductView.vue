@@ -26,11 +26,11 @@
                             <div class="product-pic-zoom">
                                 <img class="product-big-img" :src="gambar_default" alt="" />
                             </div>
-                            <div class="product-thumbs">
+                            <div class="product-thumbs" v-if="product.galleries">
                                 <carousel :dots="false" :nav="false"  class="product-thumbs-track ps-slider">
-                                    <div v-for="product in thumbs" :key="product">
-                                        <div :class="product == gambar_default ? 'pt active' : 'pt' " :data-imgbigurl="product" >
-                                            <img :src="product" alt="" @click="changeImage(product)" />
+                                    <div v-for="itemGallery in product.galleries" :key="itemGallery.id">
+                                        <div :class="itemGallery.photo == gambar_default ? 'pt active' : 'pt' " :data-imgbigurl="itemGallery.photo" >
+                                            <img :src="itemGallery.photo" alt="" @click="changeImage(itemGallery.photo)" />
                                         </div>
                                     </div>
                                 </carousel>
@@ -39,23 +39,20 @@
                         <div class="col-lg-6">
                             <div class="product-details text-left">
                                 <div class="pd-title">
-                                    <span>oranges</span>
-                                    <h3>Pure Pineapple</h3>
+                                    <span>{{ product.type }}</span>
+                                    <h3>{{ product.name }}</h3>
                                 </div>
                                 <div class="pd-desc">
                                     <p>
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis, error officia. Rem aperiam laborum voluptatum vel, pariatur modi hic provident eum iure natus quos non a sequi, id accusantium! Autem.
+                                        {{ product.description }}
                                     </p>
-                                    <p>
-                                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam possimus quisquam animi, commodi, nihil voluptate nostrum neque architecto illo officiis doloremque et corrupti cupiditate voluptatibus error illum. Commodi expedita animi nulla aspernatur.
-                                        Id asperiores blanditiis, omnis repudiandae iste inventore cum, quam sint molestiae accusamus voluptates ex tempora illum sit perspiciatis. Nostrum dolor tenetur amet, illo natus magni veniam quia sit nihil dolores.
-                                        Commodi ratione distinctio harum voluptatum velit facilis voluptas animi non laudantium, id dolorem atque perferendis enim ducimus? A exercitationem recusandae aliquam quod. Itaque inventore obcaecati, unde quam
-                                        impedit praesentium veritatis quis beatae ea atque perferendis voluptates velit architecto?
-                                    </p>
-                                    <h4>$495.00</h4>
+                                    
+                                    <h4>${{ product.price }}</h4>
                                 </div>
                                 <div class="quantity">
-                                    <router-link to="/cart" class="primary-btn pd-cart">Add To Cart</router-link>
+                                    <router-link to="/cart">
+                                        <a href="#" @click="addCart(product.id, product.name, product.price, product.galleries[0].photo)" class="primary-btn pd-cart">Add To Cart </a>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>
@@ -77,6 +74,7 @@ import HeaderShayna from "@/components/HeaderShayna.vue";
 import FooterShayna from "@/components/FooterShayna.vue";
 import RelatedProduct from "@/components/RelatedProduct.vue";
 import carousel from 'vue-owl-carousel'
+import axios from "axios";
 
 export default {
 	name: "ProductView",
@@ -88,19 +86,51 @@ export default {
 	},
     data() {
         return {
-            gambar_default: "img/mickey1.jpg",
-            thumbs: [
-                "img/mickey1.jpg",
-                "img/mickey2.jpg",
-                "img/mickey3.jpg",
-                "img/mickey4.jpg",
-            ]
+            gambar_default: "",
+            product: [],
+            product_id: this.$route.params.id,
+            cart: [],
         }
     },
     methods: {
         changeImage(img) {
             this.gambar_default = img;
+        },
+        setDataPicture(data){
+            this.product = data;
+            this.gambar_default = data.galleries[0].photo;
+        },
+        addCart(idProduct, productName, productPrice, productPhoto){
+            var productStored = {
+                "id": idProduct,
+                "name": productName,
+                "price": productPrice,
+                "photo": productPhoto,
+            }
+            this.cart.push(productStored);
+            const parsed = JSON.stringify(this.cart);
+            localStorage.setItem('cart', parsed);
+
+            window.location.reload()
         }
+    },
+    mounted(){
+         if (localStorage.getItem('cart')) {
+            try {
+                this.cart = JSON.parse(localStorage.getItem('cart'));
+            } catch(e) {
+                localStorage.removeItem('cart');
+            }
+        }
+        axios.get(`http://shayna-backend.local/api/products`,{
+            params: {
+                id: this.product_id
+            }
+        })
+        .then(res => {
+            // this.product = res.data.data
+            this.setDataPicture(res.data.data)
+        })
     }
 };
 </script>
