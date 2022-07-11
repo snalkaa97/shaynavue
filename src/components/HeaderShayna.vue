@@ -47,7 +47,7 @@
 																<h6>{{ item.name }}</h6>
 															</div>
 														</td>
-														<td @click="removeItem(item.id)" class="si-close">
+														<td @click="removeItem(item)" class="si-close">
 															<i class="ti-close"></i>
 														</td>
 													</tr>
@@ -90,31 +90,12 @@ export default {
 	}
 	},
 	methods:{
-		removeItem(idx){
-			// this.cart.splice(index, 1);
-			// const parsed = JSON.stringify(this.cart);
-            // localStorage.setItem('cart', parsed);
-			let cartUserStorage = JSON.parse(localStorage.getItem('cart'))
-			let itemCartStorage = cartUserStorage.map(itemCartStorage => itemCartStorage.id)
-			console.log(itemCartStorage)
-
-			let index = itemCartStorage.findIndex(id => id == idx)
-			console.log(index)
-			this.cart.splice(index, 1)
-
-			const parsed = JSON.stringify(this.cart);
-			localStorage.setItem('cart', parsed);
-			window.location.reload();
+		removeItem(index){
+			this.$store.commit('deleteCart', index)
 		},
 	},
 	mounted(){
-		if (localStorage.getItem('cart')) {
-			try {
-				this.cart = JSON.parse(localStorage.getItem('cart'));
-			} catch(e) {
-				localStorage.removeItem('cart');
-			}
-		}
+		this.cart = this.$store.state.carts
 	},
 	computed:{
 		totalPrice(){

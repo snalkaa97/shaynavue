@@ -10,7 +10,7 @@
                                 <img :src="product.galleries[0].photo" alt="" />
                                 <ul>
                                     <li class="w-icon active">
-                                        <a href="#" @click="addCart(product.id, product.name, product.price, product.galleries[0].photo)"><i class="icon_bag_alt"></i></a>
+                                        <a style="cursor: pointer;" @click="addCart(product.id, product.name, product.price, product.galleries[0].photo)"><i class="icon_bag_alt"></i></a>
                                     </li>
                                     <li class="quick-view">                                
                                         <router-link :to="'/product/'+product.id">+ Quick View</router-link>
@@ -53,25 +53,16 @@ export default {
     },
     methods:{
         addCart(id, name, price, photo){
-            this.cart.push({
+            this.cart = {
                 id: id,
                 name: name,
                 price: price,
                 photo: photo
-            })
-            const parsed = JSON.stringify(this.cart);
-            localStorage.setItem('cart', parsed);
-            window.location.reload()
+            }
+            this.$store.commit('addCart', this.cart);
         },
     },
     mounted(){
-        if (localStorage.getItem('cart')) {
-            try {
-                this.cart = JSON.parse(localStorage.getItem('cart'));
-            } catch(e) {
-                localStorage.removeItem('cart');
-            }
-        }
         axios.get(`http://shayna-backend.local/api/products`)
         .then(res => {
             this.products = res.data.data.data

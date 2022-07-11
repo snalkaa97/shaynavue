@@ -125,9 +125,7 @@ export default {
 	},
 	methods:{
 		removeItem(index){
-			this.cart.splice(index, 1);
-			const parsed = JSON.stringify(this.cart);
-            localStorage.setItem('cart', parsed);
+			this.$store.commit('deleteCart', index)
 		},
         checkout(){
             let productId = this.cart.map(product => {
@@ -158,13 +156,7 @@ export default {
         }
 	},
 	mounted(){
-		if (localStorage.getItem('cart')) {
-			try {
-				this.cart = JSON.parse(localStorage.getItem('cart'));
-			} catch(e) {
-				localStorage.removeItem('cart');
-			}
-		}
+        this.cart = this.$store.state.carts
 	},
     computed:{
 		totalPrice(){
