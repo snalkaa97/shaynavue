@@ -28,6 +28,9 @@ export default new Vuex.Store({
     deleteCart(state,payload){
       let index = state.carts.indexOf(payload)
       state.carts.splice(index,1)
+    },
+    clearCarts(state){
+      state.carts = []
     }
   },
   getters: {
