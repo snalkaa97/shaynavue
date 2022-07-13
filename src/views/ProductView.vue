@@ -107,21 +107,11 @@ export default {
                 "price": productPrice,
                 "photo": productPhoto,
             }
-            this.cart.push(productStored);
-            const parsed = JSON.stringify(this.cart);
-            localStorage.setItem('cart', parsed);
-
-            window.location.reload()
+            this.$store.commit('addCart', productStored);
         }
     },
     mounted(){
-         if (localStorage.getItem('cart')) {
-            try {
-                this.cart = JSON.parse(localStorage.getItem('cart'));
-            } catch(e) {
-                localStorage.removeItem('cart');
-            }
-        }
+        this.cart = this.$store.state.carts;
         axios.get(`http://shayna-backend.local/api/products`,{
             params: {
                 id: this.product_id
@@ -130,6 +120,9 @@ export default {
         .then(res => {
             // this.product = res.data.data
             this.setDataPicture(res.data.data)
+        })
+        .catch(err => {
+            console.log(err)
         })
     }
 };
